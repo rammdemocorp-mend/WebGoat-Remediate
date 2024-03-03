@@ -13,11 +13,12 @@ jobs:
         name: Release Build
         runs-on: ubuntu-latest
 
-        env:
-            DOCKER_REPOSITORY: ${{ github.repository | lower}}
-
         steps:
             - uses: actions/checkout@v4
+
+            - name: Set DOCKER_REPOSITORY
+              id: set_docker_repository
+              run: echo "::set-output name=docker_repository::$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')"
 
             - name: Set up JDK 17
               uses: actions/setup-java@v3
@@ -52,8 +53,8 @@ jobs:
                   push: false
                   load: true
                   tags: |
-                      ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}}
-                      ${{env.DOCKER_REPOSITORY)}}:latest
+                      ${{steps.set_docker_repository.outputs.docker_repository}}:${{env.WEBGOAT_TAG_VERSION}}
+                      ${{steps.set_docker_repository.outputs.docker_repository)}}:latest
                   build-args: |
                       webgoat_version=${{env.WEBGOAT_MAVEN_VERSION}}
 
@@ -67,7 +68,7 @@ jobs:
                   echo Downloading Mend CLI
                   curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
                   echo "Start Mend image scan"
-                  ./mend image ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+                  ./mend image ${{steps.set_docker_repository.outputs.docker_repository}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
 
             - name: Mend CLI Image Scan on Main
               if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -79,4 +80,4 @@ jobs:
                   echo Downloading Mend CLI
                   curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
                   echo "Start Mend image scan"
-                  ./mend image ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
+                  ./mend image ${{steps.set_docker_repository.outputs.docker_repository}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
