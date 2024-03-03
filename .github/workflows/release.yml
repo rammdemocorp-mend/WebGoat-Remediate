@@ -54,7 +54,7 @@ jobs:
                   load: true
                   tags: |
                       ${{steps.set_docker_repository.outputs.docker_repository}}:${{env.WEBGOAT_TAG_VERSION}}
-                      ${{steps.set_docker_repository.outputs.docker_repository)}}:latest
+                      ${{steps.set_docker_repository.outputs.docker_repository}}:latest
                   build-args: |
                       webgoat_version=${{env.WEBGOAT_MAVEN_VERSION}}
 
