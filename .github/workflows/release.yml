@@ -12,6 +12,10 @@ jobs:
     build:
         name: Release Build
         runs-on: ubuntu-latest
+
+        env:
+            DOCKER_REPOSITORY: ${{ lower(github.repository) }}
+
         steps:
             - uses: actions/checkout@v4
 
@@ -48,8 +52,8 @@ jobs:
                   push: false
                   load: true
                   tags: |
-                      ${{github.repository}}:${{env.WEBGOAT_TAG_VERSION}}
-                      ${{github.repository}}:latest
+                      ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}}
+                      ${{env.DOCKER_REPOSITORY)}}:latest
                   build-args: |
                       webgoat_version=${{env.WEBGOAT_MAVEN_VERSION}}
 
@@ -63,7 +67,7 @@ jobs:
                   echo Downloading Mend CLI
                   curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
                   echo "Start Mend image scan"
-                  ./mend image ${{github.repository}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
+                  ./mend image ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}_${{github.ref_name}}
 
             - name: Mend CLI Image Scan on Main
               if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -75,4 +79,4 @@ jobs:
                   echo Downloading Mend CLI
                   curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend
                   echo "Start Mend image scan"
-                  ./mend image ${{github.repository}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
+                  ./mend image ${{env.DOCKER_REPOSITORY}}:${{env.WEBGOAT_TAG_VERSION}} -s *//GH_${{github.event.repository.name}}//GH_${{github.event.repository.name}}
