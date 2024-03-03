@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
 
         env:
-            DOCKER_REPOSITORY: ${{ lower(github.repository) }}
+            DOCKER_REPOSITORY: ${{ github.repository | lower}}
 
         steps:
             - uses: actions/checkout@v4
